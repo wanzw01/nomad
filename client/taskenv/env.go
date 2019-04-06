@@ -85,6 +85,10 @@ const (
 
 	// VaultToken is the environment variable for passing the Vault token
 	VaultToken = "VAULT_TOKEN"
+
+	// VaultNamespace is the environment variable for passing the
+	// Vault namespace, if applicable
+	VaultNamespace = "VAULT_NAMESPACE"
 )
 
 // The node values that can be interpreted.
@@ -306,6 +310,7 @@ type Builder struct {
 	groupName        string
 	vaultToken       string
 	injectVaultToken bool
+	vaultNamespace   string
 	jobName          string
 
 	// otherPorts for tasks in the same alloc
