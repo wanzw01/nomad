@@ -2014,6 +2014,13 @@ func (s *StateStore) nestedUpdateAllocFromClient(txn *memdb.Txn, index uint64, a
 		return nil
 	}
 	exist := existing.(*structs.Allocation)
+	if exist.DeploymentStatus != nil {
+		fmt.Println("*** PREE state store alloc update, existing health value ", exist.DeploymentStatus.IsHealthy())
+	}
+
+	if alloc.DeploymentStatus != nil {
+		fmt.Println("*** PREE state store alloc update, updated alloc health value ", alloc.DeploymentStatus.IsHealthy())
+	}
 
 	// Copy everything from the existing allocation
 	copyAlloc := exist.Copy()
@@ -2033,6 +2040,7 @@ func (s *StateStore) nestedUpdateAllocFromClient(txn *memdb.Txn, index uint64, a
 	if copyAlloc.DeploymentStatus != nil && alloc.DeploymentStatus != nil {
 		oldHasHealthy := copyAlloc.DeploymentStatus.HasHealth()
 		newHasHealthy := alloc.DeploymentStatus.HasHealth()
+		fmt.Println("*** PREE update deployment status server side ", oldHasHealthy, newHasHealthy)
 
 		// We got new health information from the client
 		if newHasHealthy && (!oldHasHealthy || *copyAlloc.DeploymentStatus.Healthy != *alloc.DeploymentStatus.Healthy) {

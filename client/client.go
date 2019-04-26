@@ -1690,6 +1690,9 @@ func (c *Client) allocSync() {
 			sync := make([]*structs.Allocation, 0, len(updates))
 			for _, alloc := range updates {
 				sync = append(sync, alloc)
+				if alloc.DeploymentStatus != nil {
+					fmt.Println("**PREE CLIENT UPDATED ALLOC HEALTH ", alloc.DeploymentStatus.HasHealth(), alloc.DeploymentStatus.IsHealthy())
+				}
 			}
 
 			// Send to server.
@@ -1705,6 +1708,7 @@ func (c *Client) allocSync() {
 				syncTicker = time.NewTicker(c.retryIntv(allocSyncRetryIntv))
 				staggered = true
 			} else {
+				fmt.Println("**PREE UPDATED ALLOC success")
 				updates = make(map[string]*structs.Allocation)
 				if staggered {
 					syncTicker.Stop()

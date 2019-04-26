@@ -8,12 +8,16 @@ import (
 	"testing"
 	"time"
 
+	"bytes"
+
 	"github.com/hashicorp/consul/api"
 	"github.com/hashicorp/go-multierror"
+	"github.com/hashicorp/nomad/helper"
 	"github.com/hashicorp/nomad/helper/uuid"
 	"github.com/kr/pretty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/ugorji/go/codec"
 )
 
 func TestJob_Validate(t *testing.T) {
@@ -4396,4 +4400,31 @@ func TestNodeReservedNetworkResources_ParseReserved(t *testing.T) {
 
 		require.Equal(out, tc.Parsed)
 	}
+}
+
+func TestAllocHealthySerialize(t *testing.T) {
+	alloc := &Allocation{
+		ID: "mytest_id",
+	}
+
+	alloc.DeploymentStatus = &AllocDeploymentStatus{
+		Healthy: helper.BoolToPtr(false),
+	}
+
+	require.True(t, alloc.DeploymentStatus.HasHealth())
+	require.True(t, alloc.DeploymentStatus.IsUnhealthy())
+
+	handle := MsgpackHandle
+
+	// round trip
+	var buf bytes.Buffer
+	codec.NewEncoder(&buf, handle).MustEncode(&alloc)
+
+	var parsedAlloc *Allocation
+	codec.NewDecoder(&buf, handle).MustDecode(&parsedAlloc)
+
+	require.True(t, parsedAlloc.DeploymentStatus.HasHealth())
+	require.True(t, parsedAlloc.DeploymentStatus.IsUnhealthy())
+
+	require.Equal(t, alloc, parsedAlloc)
 }

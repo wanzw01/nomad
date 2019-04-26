@@ -1097,6 +1097,10 @@ func (n *Node) batchUpdate(future *structs.BatchFuture, updates []*structs.Alloc
 	if len(trimmedEvals) > 0 {
 		n.logger.Debug("adding evaluations for rescheduling failed allocations", "num_evals", len(trimmedEvals))
 	}
+
+	for _, update := range updates {
+		fmt.Println("****PREE SERVER ALLOC UPDATES DEPLOYMENT HEALTH", update.DeploymentStatus.HasHealth(), update.DeploymentStatus.IsHealthy())
+	}
 	// Prepare the batch update
 	batch := &structs.AllocUpdateRequest{
 		Alloc:        updates,

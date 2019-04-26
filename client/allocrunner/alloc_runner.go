@@ -461,7 +461,11 @@ func (ar *allocRunner) handleTaskStateUpdates() {
 		}
 
 		// Get the client allocation
+
 		calloc := ar.clientAlloc(states)
+		if calloc.DeploymentStatus != nil {
+			fmt.Println("** PREE client alloc deployment status in alloc updater ", calloc.DeploymentStatus.IsHealthy())
+		}
 
 		// Update the server
 		ar.stateUpdater.AllocStateUpdated(calloc)
